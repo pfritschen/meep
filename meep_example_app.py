@@ -260,8 +260,9 @@ class MeepExampleApp(object):
         
     def add_message_action(self, environ, start_response):
         print "TRYING TO ADD A MESSAGE!!!!\n"
-        print environ['wsgi.input']
-        form = cgi.FieldStorage(fp=environ['wsgi.input'], environ=environ)
+        print "add message ENVIRON", environ
+       # print environ['wsgi.input']
+        form = cgi.FieldStorage(fp=environ['QUERY_STRING'], environ=environ)
        
         title = form['title'].value
         message = form['message'].value
@@ -349,6 +350,7 @@ class MeepExampleApp(object):
         # see if the URL is in 'call_dict'; if it is, call that function.
         url = environ['PATH_INFO']
         fn = call_dict.get(url)
+        print "THE URL", url
 
         if fn is None:
             start_response("404 Not Found", [('Content-type', 'text/html')])
