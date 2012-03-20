@@ -12,30 +12,20 @@ STATUS=""
 HEADERS=""
 TIME=""
 COOKIE=""
-def fake_start_response(status, headers):     # wHat exactly does the fake_start resposne do, somehow it returns the html...
+def fake_start_response(status, headers):    
 
     STATUS=status
-    HEADERS=headers                  #the cookie is right in here, how do i send that to index
+    HEADERS=headers                
     TIME=datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     print "STATUS",status
     print "HEADERS",headers
-   # environ['HTTP_COOKIE'] = "USER"
-    print len(headers)
+
+
     for header in headers:
-        print header[0], "SPACE", header[1]
         if header[0]=="Set-Cookie":
-            cookie=header[1]
-          #  print "COOKIE BEFORE I MESS WITH IT", cookie
             cookielist=cookie.split(";")       #  "WONT WORK IF SOMEONES NAME HAS A :"
-          #  print "list",cookielist
             cookie=cookielist[0]
-           
             environ['HTTP_COOKIE'] = cookie
-        #    print "SET THE COOKIE", cookie
-            
-##    print datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-##    print '\n'
-    #whats going on in here?
 
 def handle_connection(sock):
 
@@ -55,7 +45,7 @@ def handle_connection(sock):
                     location=words[1].split('?')      #1,
                     environ['PATH_INFO'] = location[0]
                     if len(location)==2:
-                        environ['QUERY_STRING'] = location[1] # @CTB
+                        environ['QUERY_STRING'] = location[1] 
                     
                     environ['SERVER_PROTOCOL'] = words[2]
                     
@@ -63,24 +53,13 @@ def handle_connection(sock):
                 elif line.startswith('Cookie: '):
                     line = line.rstrip('\n')
                     line = line.lstrip('Cookie: ')
-                   # environ['HTTP_COOKIE'] = line
-                  #  print "THE COOKIE LINE:" ,line
-           # print "SETTING ENVIRON COOKIE",COOKIE
-           # environ['HTTP_COOKIE'] = "username=USER"
-            print "Environ\n",environ                            # should pathinfo contain only /m/addaction or should it contain the message and stuff too +rerouting
-
-
+                
+            print "Environ\n",environ                            
             print "FAKE RESPONSE", fake_start_response
 
           
             app.__call__(environ, fake_start_response)          # routes us to the right place in meep example app?
-
-            
             data = app(environ, fake_start_response)             #so the problem is before we get the data
-
-
-
-
 
 
            
@@ -116,8 +95,7 @@ if __name__ == '__main__':
     while 1:
         print 'waiting...'
         (client_sock, client_address) = sock.accept()
-        print 'got connection', client_address
         handle_connection(client_sock)
-        print "DONE HANDELING CONNECTION"
+
 
 
