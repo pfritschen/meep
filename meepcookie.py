@@ -14,4 +14,4 @@ def make_set_cookie_header(name, value, path='/'):
 
     s = c.output()
     (key, value) = s.split(': ')
-    return (key, value)m
+    return (key, value)
