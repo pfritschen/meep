@@ -2,6 +2,7 @@ import meeplib
 import traceback
 import cgi
 import meepcookie
+import time
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -148,7 +149,7 @@ class MeepExampleApp(object):
         
     def list_messages(self, environ, start_response):
 
-
+        time.sleep(10)
         messages = meeplib.get_all_messages()
 
 ##        s = []

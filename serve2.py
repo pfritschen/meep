@@ -3,6 +3,7 @@
 import sys
 import socket
 import datetime
+import testsocket
 from meep_example_app import MeepExampleApp, initialize
 
 initialize()
@@ -23,8 +24,12 @@ def fake_start_response(status, headers):
 
     for header in headers:
         if header[0]=="Set-Cookie":
+            cookie=header[1]
+          #  print "COOKIE BEFORE I MESS WITH IT", cookie
             cookielist=cookie.split(";")       #  "WONT WORK IF SOMEONES NAME HAS A :"
+          #  print "list",cookielist
             cookie=cookielist[0]
+           
             environ['HTTP_COOKIE'] = cookie
 
 def handle_connection(sock):
