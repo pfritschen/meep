@@ -3,6 +3,7 @@ import traceback
 import cgi
 import meepcookie
 import time
+from file_server import FileServer
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -45,39 +46,26 @@ class MeepExampleApp(object):
       
     def index(self, environ, start_response):
         start_response("200 OK", [('Content-type', 'text/html')])
-        #check cookie to find a  user, if nto set blank username
-       # print "Username", username, len(username)
-
 
         cookie = environ.get("HTTP_COOKIE")
-      #  print "YUMMY COOKIES \n\n\n", cookie, environ
         if cookie is None or len(cookie)==9:
-            print "NO USERNAME COOKIE"
             username2 = ''
             loggedInMessage="Not Logged IN"
         else:
-        #    print len('username=')
             username2 = cookie[9:]
-        #    print "USERNAME\n", username2,
             loggedInMessage = 'You are logged in as user: %s' % (username2,)
         if username2=='':
-        #    print "USERNAME IS BLANK"
+
             return [ render_page('index.html', username="NONE") ]
-            #return ["""you are not logged in %s.<p><a href='/m/add'>Add a message</a><p><a href='/login'>Log in</a><p><a href='/logout'>Log out</a><p><a href='/m/list'>Show messages</a><p><p><a href='/m/IDTEST'>Get next User ID</a><p>""" % (username,)]
         else:
-            #return ["""you are logged in as user: %s.<p><a href='/m/add'>Add a message</a><p><a href='/login'>Log in</a><p><a href='/logout'>Log out</a><p><a href='/m/list'>Show messages</a><p><p><a href='/m/IDTEST'>Get next User ID</a><p>""" % (username,)]
             return [ render_page('index.html', username=username2) ]
 
     def login(self, environ, start_response):
         
-        print "IN LOGIN \n\n\n"
-        print "Environ:", environ, "start+response", start_response
-        # hard code the username for now; this should come from Web input!
         username = 'test'
         u = meeplib.User('test', 'foo',-1)
         # retrieve user
         user = meeplib.get_user(username)
-        print "User", user
         # set content-type
         headers = [('Content-type', 'text/html')]
         cookie_name, cookie_val = meepcookie.make_set_cookie_header('username',user.username)
@@ -88,8 +76,6 @@ class MeepExampleApp(object):
         v = '/'
         headers.append((k, v))
         start_response('302 Found', headers)
-        print "HEADERS INSIDE OF LOGIN \n\n"
-        print headers
         
         return "no such content"
 
@@ -106,16 +92,14 @@ class MeepExampleApp(object):
         headers.append((k, v))
         
         start_response('302 Found', headers)
-        print "HEADERS INSIDE OF LOGOUT \n\n"
-        print headers
         return "no such content"
     def list_search(self, environ, start_response):
    #     print "ENVIRON", environ
         results=meeplib.get_search_results()
         s = []
 
-        print "RESULTS"
-        print results 
+        #print "RESULTS"
+       # print results 
         for result in results:
             s.append(meeplib.get_message(result))
 ##          m=meeplib.get_message(result)
@@ -188,20 +172,13 @@ class MeepExampleApp(object):
         #return ["".join(s)]
 
     def add_message(self, environ, start_response):
-        print "IN ADD MESSAGE"
+       
         headers = [('Content-type', 'text/html')]
         
         start_response("200 OK", headers)
 
-       # return """<form action='add_action' method='GET'>Title: <input type='text' name='title'><br>Message:<input type='text' name='message'><br><input type='submit'></form>"""
         return [ render_page('add_message.html') ]
-##    def search (self, environ, start_response):
-##     
-##        headers = [('Content-type', 'text/html')]
-##        start_response("200 OK", headers)
-##
-##        return """<form action='search_action' method='POST'>Message:<input type='text' name='id'><br><input type='submit'></form>"""
-##
+    
     def search_message_action(self, environ, start_response):
         print "searchaction"
         print environ['wsgi.input']
@@ -220,20 +197,6 @@ class MeepExampleApp(object):
         return ["message deleted"]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     ############################
     def delete_message(self, environ, start_response):
         headers = [('Content-type', 'text/html')]
@@ -260,8 +223,7 @@ class MeepExampleApp(object):
 
         
     def add_message_action(self, environ, start_response):
-        print "TRYING TO ADD A MESSAGE!!!!\n"
-        print "add message ENVIRON", environ
+
        # print environ['wsgi.input']
         form = cgi.FieldStorage(fp=environ['QUERY_STRING'], environ=environ)
        
@@ -345,6 +307,8 @@ class MeepExampleApp(object):
                       '/m/post_reply' : self.post_reply,
                       '/m/add_reply_action' : self.add_reply_action,
                       '/m/IDTEST' : self.IDTEST,
+                      '/meep.css': FileServer("files/meep.css"),
+                      '/charmander': FileServer("files/charmander.jpg")
 
                       }
 
