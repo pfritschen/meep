@@ -3,6 +3,7 @@ import traceback
 import cgi
 import meepcookie
 import time
+#import MySQLdb         #SQL
 from file_server import FileServer
 
 from jinja2 import Environment, FileSystemLoader
@@ -75,10 +76,36 @@ class MeepExampleApp(object):
         k = 'Location'
         v = '/'
         headers.append((k, v))
-        start_response('302 Found', headers)
+        #start_response('302 Found', headers)
+       # return "no such content"
+    
+        #headers = [('Content-type', 'text/html')]
         
-        return "no such content"
+        start_response("200 OK", headers)
 
+        return [ render_page('login.html') ]
+    
+    def login_action(self, environ, start_response):
+
+       # print environ['wsgi.input']
+        form = cgi.FieldStorage(fp=environ['QUERY_STRING'], environ=environ)
+       
+        login = form['login'].value
+        password = form['password'].value
+        
+        #generate random session id
+   ##     db = MySQLdb.connect(db='cse491')   ##SQL
+     ##   c=db.cursor()
+       ## c.execute('CREATE TABLE IF NOT EXISTS LOGINS(Login varchar(10) Primary key, Password varchar(10), session INTEGER)')
+       ## c.execute('INSERT INTO LOGINS ??login,password, session')
+  
+        headers = [('Content-type', 'text/html')]
+        headers.append(('Location', '/m/list'))
+        #append session to headers, keep session in all headers? check to see if session in database on every page
+        start_response("302 Found", headers)
+        return ["message added"]
+        
+       
     def logout(self, environ, start_response):
 
         headers = [('Content-type', 'text/html')]
@@ -133,7 +160,7 @@ class MeepExampleApp(object):
         
     def list_messages(self, environ, start_response):
 
-        time.sleep(10)
+       # time.sleep(10)
         messages = meeplib.get_all_messages()
 
 ##        s = []
@@ -297,7 +324,7 @@ class MeepExampleApp(object):
                       '/m/list': self.list_messages,
                       '/m/search': self.list_search,
                       '/m/add': self.add_message,
-
+                      '/m/login_action': self.login_action,
                       '/m/add_action': self.add_message_action,
                       '/m/delete': self.delete_message,
                       '/m/delete_action': self.delete_message_action,

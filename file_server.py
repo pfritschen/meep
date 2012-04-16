@@ -1,9 +1,5 @@
-#copied from remd
-
 import mimetypes
 mimetypes.init()
-#global mimetypes = {"txt" : "text/plain", "jpg" : "image/jpeg", "jpeg" : "image/jpeg",\
-#"png" : "image/png", "css" : "text/css", "gif" : "image/gif"}
 
 class FileServer(object):
     def __init__(self, filename):
@@ -13,13 +9,16 @@ class FileServer(object):
     def __call__(self, environ, start_response):
         try:
             fp = open(self.filename)
-            print "OPEN\n\n\n"
+            print "OPENING:" + self.filename
+          
         except OSerror:
             start_response("404 not found", [('Content-type', 'text/html'),])
-            print "NOT OPEN\n\n\n"
+            print "NOT OPENING:" + self.filename
             return 'file not found'
 
         data = fp.read()
+        print data
+        print self.content_type
         start_response("200 OK", [('Content-type', self.content_type),])
-        print "The DATA FROM FILE SERVER",data
+        
         return data

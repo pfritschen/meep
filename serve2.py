@@ -3,7 +3,7 @@
 import sys
 import socket
 import datetime
-import testsocket
+#import testsocket
 from meep_example_app import MeepExampleApp, initialize
 
 initialize()

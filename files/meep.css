@@ -1,39 +1,24 @@
-/* basic elements */
+/* CSS Document */
+
+* {margin: 0;
+   padding: 0;}
+   
 html {
-	margin: 0;
-	padding: 0;
-	height: 1250px;
-	background: #8ebce0 url(backgroundfog.jpg) no-repeat center;
-	background-attachment: fixed;
-	}
-body { 
-	background: url(bodybg.png) repeat;
-	margin: auto; 
-	width: 650px;
-	font: 75% arial;
-	line-height: 1.5em;
-	}
-p { 
-	margin-top: 0; 
-	text-align: justify;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	background-color: #004444;
+	color: #000000;
 }
-a:link { 
-	font-weight: bold;
-	text-decoration: none;
-	color: #fff;
+#main{
+    padding: 1em;
+    background-color: #FEFEFE;
+    margin: 1.5em auto;
+    width: 750px;
+    border: #00AAAA solid 10px;
 }
-a:hover {
-	font-weight: bold;
-	text-decoration: none;
-	color: #594338;
+h1 {
+    background-color:#00AAAA;
+    color: #004444;
+    padding-bottom: 50px;
+    border-bottom: solid 10px #FFAA00;
 }
-a:visited {
-	font-weight: bold;
-	text-decoration: none;
-	color: #fff;
-}
-a:visited:hover {
-	font-weight: bold;
-	text-decoration: none;
-	color: #594338;
-}
+
