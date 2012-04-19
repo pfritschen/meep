@@ -23,16 +23,18 @@ function test(variable){
 	alert('hello');
 }
 //t = setInterval(test,5000);
-//mystr="cow"
-//t=	setInterval(function() {test(mystr);} 5000);
-//var t=setInterval("test('abc')",20000);
+mystr="cow"
+//var t=	setInterval(function() {test(mystr);} 5000);
+//var t=setInterval("test('abc')",20000);   //CORRECT
+
+// var t=setInterval(function() {add_messages(xml);}, 10000);
 $(document).ready(function() {
   timestamp = 0;
 
   function add_messages(xml) {
      // retrieve 'status' from the XML; if nothing changed, exit.
     // if($("status", xml).text() == "2") return;
-
+	//alert('adding messages');
      // update timestamp value from XML
      timestamp = $("time", xml).text();
 
@@ -57,15 +59,17 @@ $(document).ready(function() {
      $.post("post_message",
             { message    : $("#message").val(), 
               user       : $("#author").val(),
-              last_time  : timestamp,
+              last_time  : 0,
             },
             // apply 'add_messages' to update page with returned data
             function(xml) {               
               add_messages(xml)
-			  var t=setInterval("add_messages(xml)",10000);
+			  //var t=setInterval("add_messages('xml')",5000);   //CORRECT
+			  setInterval(function(){add_messages(xml)},20000);
+			  
             }
      );
-
+	
      // blank out the 'message' field in the form
      $("#message").val("");
      return false;
@@ -76,13 +80,14 @@ $(document).ready(function() {
   //
 
   // blank out the 'loading' message
+  
   $("#loading").remove();
-
+	
   // get the current set of messages with timestamp 0
   $.post("get_messages",
          { last_time : timestamp },
          function(xml) { add_messages(xml) }
-		 //setInterval(function() {add_messages(xml);} 10000);
+		 
   );
  
 });
