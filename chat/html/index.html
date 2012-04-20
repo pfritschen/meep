@@ -36,8 +36,13 @@ $(document).ready(function() {
     // if($("status", xml).text() == "2") return;
 	//alert('adding messages');
      // update timestamp value from XML
+	  
      timestamp = $("time", xml).text();
-
+ $.post("get_messages",
+         { last_time : timestamp },
+         function(xml) { add_messages(xml) }
+		 
+        );
      // for each 'message' block in the XML, retrieve author & content, then
      // post.
 
@@ -59,13 +64,13 @@ $(document).ready(function() {
      $.post("post_message",
             { message    : $("#message").val(), 
               user       : $("#author").val(),
-              last_time  : 0,
+              last_time  : timestamp,
             },
             // apply 'add_messages' to update page with returned data
             function(xml) {               
-              add_messages(xml)
+             // add_messages(xml)
 			  //var t=setInterval("add_messages('xml')",5000);   //CORRECT
-			  setInterval(function(){add_messages(xml)},20000);
+			  setInterval(function(){add_messages(xml)},9000000);//COMPLETLEY HACKED, probably doesnt need to be here but its working with it and not without, double posts when this function runs
 			  
             }
      );
