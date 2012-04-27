@@ -3,12 +3,48 @@ import traceback
 import cgi
 import meepcookie
 import time
-#import MySQLdb         #SQL
+import sqlite3
+import uuid
 from file_server import FileServer
 
 from jinja2 import Environment, FileSystemLoader
 
 env = Environment(loader=FileSystemLoader('templates'))
+
+        
+db = sqlite3.connect('foo2.db')
+c = db.cursor()
+
+
+def session_login(c, username):
+        session_cookie = str(uuid.uuid4())
+        username=str(username)
+        c.execute('INSERT INTO sessions (username, cookie) VALUES (?, ?)', (username, session_cookie))
+        return session_cookie
+
+
+
+def session_get(c, session_cookie):
+        username = None
+
+        session_cookie=str(session_cookie)
+        #print "INSIDE THE FUNCTION COOKIE"+ session_cookie
+        c.execute('SELECT username FROM sessions WHERE cookie=?', [session_cookie])
+       # c.execute('SELECT * FROM sessions')
+        try:
+            username = c.fetchone()[0]        #the cookie looks the same....
+        except:
+            pass
+        return username
+    
+def session_delete(c, session_cookie):
+        session_cookie=str(session_cookie)
+        c.execute('DELETE from sessions WHERE cookie=?', [session_cookie])
+
+
+
+
+
 
 def render_page(filename, **variables):
     template = env.get_template(filename)
@@ -54,6 +90,7 @@ class MeepExampleApp(object):
             loggedInMessage="Not Logged IN"
         else:
             username2 = cookie[9:]
+            username2=session_get(c,username2)
             loggedInMessage = 'You are logged in as user: %s' % (username2,)
         if username2=='':
 
@@ -61,16 +98,36 @@ class MeepExampleApp(object):
         else:
             return [ render_page('index.html', username=username2) ]
 
-    def login(self, environ, start_response):
         
-        username = 'test'
+
+
+    def login(self, environ, start_response):
+
+        #sqlstuff
+
+        c.execute('''CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY ,username TEXT,cookie TEXT UNIQUE,created DATETIME)''')
+
+
+        
+        username = 'COOKIEZNAMNAM'
+        userCookie=session_login(c,username)
+        print "THE COOKIE",userCookie
+        usernameDB=session_get(c,userCookie)
+        print "THE USERNAMEDB ",usernameDB
+
+
+
+#end sql stuff
+        
         u = meeplib.User('test', 'foo',-1)
         # retrieve user
         user = meeplib.get_user(username)
         # set content-type
         headers = [('Content-type', 'text/html')]
-        cookie_name, cookie_val = meepcookie.make_set_cookie_header('username',user.username)
-
+        cookie_name, cookie_val = meepcookie.make_set_cookie_header('username',userCookie)        #pass the cookie out, use it to check if somone is logged in
+        print "COOKIE_VAL"+cookie_val
+        print type(cookie_val)
+    
         headers.append((cookie_name, cookie_val))
         # send back a redirect to '/'
         k = 'Location'
@@ -111,6 +168,14 @@ class MeepExampleApp(object):
         headers = [('Content-type', 'text/html')]
         cookie_name, cookie_val = meepcookie.make_set_cookie_header('username','')
 
+        
+        cookie = environ.get("HTTP_COOKIE")
+        username2 = cookie[9:]
+        print "USERNAME2 IN LOGOUT" + username2
+        
+        
+        session_delete(c,username2)
+        username2=session_get(c,username2)
         headers.append((cookie_name, cookie_val))
         
         # send back a redirect to '/'
